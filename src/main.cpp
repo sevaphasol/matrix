@@ -5,14 +5,19 @@
 
 int main()
 {
-    matrix_t *mp1 = make_matrix(2, 3);
-    fill_matrix(mp1, 1);
+    matrix_t *mp1 = make_matrix(5, 2);
+    fill_matrix(mp1, 3.0);
     print_matrix(mp1);
 
     matrix_t *mp2 = transpose_matrix(mp1);
     print_matrix(mp2);
 
+    matrix_t *mp3 = multiply_matrix(mp1, mp2);
+    print_matrix(mp3);
+
     delete_matrix(mp1);
+    delete_matrix(mp2);
+    delete_matrix(mp3);
 
     return 0;
 }

@@ -26,4 +26,6 @@ void scan_matrix(matrix_t * const mp);
 
 matrix_t *transpose_matrix(const matrix_t *mp);
 
+matrix_t *multiply_matrix(const matrix_t *mp1, const matrix_t *mp2);
+
 #endif // MATRIX_H__

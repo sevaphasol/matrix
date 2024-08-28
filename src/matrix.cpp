@@ -132,10 +132,34 @@ void scan_matrix(matrix_t * const mp)
 }
 
 matrix_t *transpose_matrix(const matrix_t *mp)
+
 {
     matrix_t *mp_new = make_matrix(mp->size_j, mp->size_i);
     for (size_t i = 0; i < mp_new->size_i; i++)
         for (size_t j = 0; j < mp_new->size_j; j++)
             mp_new->data[i][j] = mp->data[j][i];
     return mp_new;
+}
+
+matrix_t *multiply_matrix(const matrix_t *mp1, const matrix_t *mp2)
+{
+    if ((mp1 != NULL) && (mp1->data != NULL) && (mp2 != NULL) && (mp2->data != NULL)
+        && (mp1->size_i == mp2->size_j) && (mp1->size_j == mp2->size_i))
+    {
+        matrix_t *mp = make_matrix(mp1->size_i, mp2->size_j);
+        if (mp == NULL)
+            return NULL;
+        for (size_t i = 0; i < mp->size_i; i++)
+        {
+            for (size_t j = 0; j < mp->size_j; j++)
+            {
+                TYPE sum = 0;
+                for (size_t pos = 0; pos < mp1->size_j; pos++)
+                    sum += mp1->data[i][pos] * mp2->data[pos][j];
+                mp->data[i][j] = sum;
+            }
+        }
+        return mp;
+    }
+    return NULL;
 }
