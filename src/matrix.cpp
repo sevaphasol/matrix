@@ -10,9 +10,11 @@ typedef struct Matrix
     size_t size_j;
 } matrix_t;
 
-matrix_t *make_matrix(size_t rows, size_t cols)
+matrix_t *make_matrix(const size_t rows, const size_t cols)
 {
     matrix_t *matrix = (matrix_t *)calloc(1, sizeof(matrix_t));
+    if (matrix == NULL)
+        return NULL;
     *matrix = {NULL, rows, cols};
     matrix->data = (TYPE **)calloc(rows, sizeof(TYPE *));
     if (matrix->data != NULL)
@@ -37,74 +39,66 @@ void delete_matrix(matrix_t *mp)
     free(mp);
 }
 
-void print_matrix(matrix_t *mp)
+void print_matrix(const matrix_t *mp)
 {
-    for (size_t i = 0; i < mp->size_i; i ++)
+    if (mp->data != NULL)
     {
-        for (size_t j = 0; j < mp->size_j; j++)
-            printf("%lf ", mp->data[i][j]);
+        for (size_t i = 0; i < mp->size_i; i ++)
+        {
+            for (size_t j = 0; j < mp->size_j; j++)
+                printf("%lf ", mp->data[i][j]);
+            printf("\n");
+        }
         printf("\n");
     }
-    printf("\n");
 }
 
-struct Matrix *sum_matrix(matrix_t *mp1, matrix_t *mp2)
+matrix_t *sum_matrix(const matrix_t *mp1, const matrix_t *mp2)
 {
-    matrix_t *mp = make_matrix(mp1->size_i, mp1->size_j);
-    for (size_t i = 0; i < mp1->size_i; i++)
+    if ((mp1 != NULL) && (mp1->data != NULL) && (mp2 != NULL) && (mp2->data != NULL))
     {
-        for (size_t j = 0; j < mp1->size_j; j++)
-            mp->data[i][j] = mp1->data[i][j] + mp2->data[i][j];
+        matrix_t *mp = make_matrix(mp1->size_i, mp1->size_j);
+        for (size_t i = 0; i < mp1->size_i; i++)
+        {
+            for (size_t j = 0; j < mp1->size_j; j++)
+                mp->data[i][j] = mp1->data[i][j] + mp2->data[i][j];
+        }
+        return mp;
     }
-    return mp;
+    return NULL;
 }
 
-// // ф-ция проверяющая диагноальная или нет
-//
-// void scan_matrix(Matrix *matrix)
-// {
-//     for (size_t i = 0; i < matrix->size_i * matrix->size_j; i++)
-//     {
-//         scanf("%lf", matrix->mp + i);
-//     }
-// }
-//
-// Matrix
-
-void fill_matrix(matrix_t *mp, TYPE val)
+void fill_matrix(matrix_t * const mp, const TYPE val)
 {
-    for (size_t i = 0; i < mp->size_i; i++)
-        for (size_t j = 0; j < mp->size_j; j++)
-            mp->data[i][j] = val;
-}
-
-bool is_diagonal(matrix_t *mp)
-{
-    for (size_t i = 0; i < mp->size_i; i++)
+    if ((mp != NULL) && (mp->data != NULL))
     {
-        for (size_t j = 0; j < mp->size_j; j++)
-            if (double_compare(mp->data[i][j], 0))
-            {
-                if (i == j)
-                    return false;
-            }
-            else
-            {
-                if (i != j)
-                    return false;
-            }
-    }
-    return true;
-}
-
-void diagonal_fill_matrix(matrix_t *mp, TYPE val)
-{
-    for (size_t i = 0; i < mp->size_i; i++)
-        for (size_t j = 0; j < mp->size_j; j++)
-            if (i == j)
+        for (size_t i = 0; i < mp->size_i; i++)
+            for (size_t j = 0; j < mp->size_j; j++)
                 mp->data[i][j] = val;
-            else
-                mp->data[i][j] = 0;
+    }
+}
+
+bool is_diagonal(const matrix_t *mp)
+{
+    if ((mp != NULL) && (mp->data != NULL))
+    {
+        for (size_t i = 0; i < mp->size_i; i++)
+        {
+            for (size_t j = 0; j < mp->size_j; j++)
+                if (double_compare(mp->data[i][j], 0))
+                {
+                    if (i == j)
+                        return false;
+                }
+                else
+                {
+                    if (i != j)
+                        return false;
+                }
+        }
+        return true;
+    }
+    return false;
 }
 
 bool double_compare(const double x, const double y)
@@ -112,4 +106,36 @@ bool double_compare(const double x, const double y)
     assert(isfinite(x));
     assert(isfinite(y));
     return (fabs(x - y) < EPSILON);
+}
+
+void diagonal_fill_matrix(matrix_t * const mp, const TYPE val)
+{
+    if ((mp != NULL) && (mp->data != NULL))
+    {
+        for (size_t i = 0; i < mp->size_i; i++)
+            for (size_t j = 0; j < mp->size_j; j++)
+                if (i == j)
+                    mp->data[i][j] = val;
+                else
+                    mp->data[i][j] = 0;
+    }
+}
+
+void scan_matrix(matrix_t * const mp)
+{
+    if (mp != NULL)
+    {
+        for (size_t i = 0; i < mp->size_i; i++)
+            for (size_t j = 0; j < mp->size_j; j++)
+                scanf("%lf", &mp->data[i][j]);
+    }
+}
+
+matrix_t *transpose_matrix(const matrix_t *mp)
+{
+    matrix_t *mp_new = make_matrix(mp->size_j, mp->size_i);
+    for (size_t i = 0; i < mp_new->size_i; i++)
+        for (size_t j = 0; j < mp_new->size_j; j++)
+            mp_new->data[i][j] = mp->data[j][i];
+    return mp_new;
 }
