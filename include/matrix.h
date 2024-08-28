@@ -1,26 +1,27 @@
 #ifndef MATRIX_H__
 #define MATRIX_H__
 
+typedef struct Matrix matrix_t;
+
 #define TYPE double
+#define EPSILON 0.000000000000001
 
-typedef struct Matrix
-{
-    TYPE *mp[];
-    size_t size_i;
-    size_t size_j;
-    size_t type_size = sizeof(TYPE);
- } Matrix;
+struct Matrix *make_matrix(size_t rows, size_t cols);
 
-int make_matrix(Matrix *matrix);
+void delete_matrix(matrix_t *mp);
 
-void delete_matrix(Matrix *matrix);
+void print_matrix(matrix_t *mp);
 
-void print_matrix(Matrix *matrix);
+struct Matrix *sum_matrix(matrix_t *mp1, matrix_t *mp2);
 
-void sum_matrix(Matrix *matrix1, Matrix *matrix2);
+void fill_matrix(matrix_t *mp, TYPE val);
 
-void scan_matrix(Matrix *matrix);
+bool is_diagonal(matrix_t *mp);
 
-void fill_matrix(Matrix *matrix, TYPE data[][3]);
+void diagonal_fill_matrix(matrix_t *mp, TYPE val);
+
+bool double_compare(const double x, const double y);
+
+// void scan_matrix(Matrix *matrix);
 
 #endif // MATRIX_H__

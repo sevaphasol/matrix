@@ -5,36 +5,36 @@
 
 int main()
 {
-    Matrix matrix1 = {NULL, 3, 3, sizeof(TYPE)};
-    Matrix matrix2 = {NULL, 3, 3, sizeof(TYPE)};
+    size_t m = 3;
+    size_t n = 3;
 
-    TYPE data1[][3] = {
-                       {1, 1, 1},
-                       {1, 1, 1,},
-                       {1, 1, 1}
-                       };
+    matrix_t *mp1 = make_matrix(n, m);
+    matrix_t *mp2 = make_matrix(n, m);
 
-    TYPE data2[][3] = {
-                       {2, 2, 2},
-                       {2, 2, 2,},
-                       {2, 2, 2}
-                       };
+    diagonal_fill_matrix(mp1, 1.0);
+    fill_matrix(mp2, 1.0);
 
-    make_matrix(&matrix1);
-    make_matrix(&matrix2);
+    matrix_t *mp_sum = sum_matrix(mp1, mp2);
 
-    print_matrix(&matrix1);
-    print_matrix(&matrix2);
+    print_matrix(mp1);
 
-    fill_matrix(&matrix1, data1);
-    fill_matrix(&matrix2, data2);
+    printf("%d\n\n", is_diagonal(mp1));
 
-    sum_matrix(&matrix1, &matrix2);
+    print_matrix(mp2);
 
-    print_matrix(&matrix1);
+    printf("%d\n\n", is_diagonal(mp2));
 
-    delete_matrix(&matrix1);
-    delete_matrix(&matrix2);
+    print_matrix(mp_sum);
+
+    delete_matrix(mp1);
+    delete_matrix(mp2);
+
+    // sum_matrix(mp1, mp2);
+
+    // fill_matrix(mp1, 1.0);
+
+    // print_matrix(mp1);
+
     return 0;
 }
 

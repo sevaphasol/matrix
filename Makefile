@@ -1,15 +1,27 @@
 CC = g++
+CFLAGS = -I include -Wcast-qual -Wconversion -Wctor-dtor-privacy -Wempty-body -Wformat-security \
+	-Wformat=2 -Wignored-qualifiers -Wlogical-op -Wno-missing-field-initializers -Wnon-virtual-dtor \
+	-Woverloaded-virtual -Wpointer-arith -Wsign-promo -Wstack-usage=8192 -Wstrict-aliasing \
+	-Wstrict-null-sentinel -Wtype-limits -Wwrite-strings -fexceptions -pipe
 
-SRC_DIR = src
-BIN_DIR = bin
+SRCS_DIR = src
+O_DIR = bin
 
-all: matrix
+EXE = matrix
 
-matrix: bin\main.o bin\matrix.o
-	g++ bin\main.o bin\matrix.o -o matrix
+SRC_FILES = $(wildcard $(SRCS_DIR)/*.cpp)
+O_FILES = $(subst $(SRCS_DIR), $(O_DIR), $(SRC_FILES:.cpp=.o))
 
-bin\main.o: src\main.cpp
-	g++ -c -I include src\main.cpp -o bin\main.o
+all: $(EXE)
 
-matrix.o: src\matrix.cpp
-	g++ -c -I include src\matrix.cpp -o bin\matrix.o
+$(O_DIR):
+	mkdir -p $(O_DIR)
+
+$(EXE): $(O_FILES)
+	$(CC) $^ -o $@
+
+$(O_DIR)/%.o: $(SRCS_DIR)/%.cpp $(O_DIR)
+	$(CC) -c $(CFLAGS) $< -o $@
+
+clean:
+	rm -fr $(O_DIR) $(BUILD_DIR)

@@ -3,66 +3,113 @@
 #include <TXLib.h>
 #include "matrix.h"
 
-int make_matrix(Matrix *matrix)
+typedef struct Matrix
 {
-    // matrix->mp = (TYPE *)calloc(matrix->sizeX * matrix->sizeY, matrix->type_size);
-    // if (matrix->mp != NULL)
-    //     return 0;
-    // return -1;
-    matrix->mp = (TYPE *)calloc(matrix->size_i, matrix->type_size);
-    if (matrix->mp != NULL)
-        for (size_t i = 0; i < matrix->size_i; i++)
-        {
-            matrix->mp[i] = (TYPE *)calloc(matrix->size_j, matrix->type_size);
-            if (matrix->mp[i] != NULL)
-                return 0;
-            return -1;
-        }
-    else
-        return -1;
-}
+    TYPE **data;
+    size_t size_i;
+    size_t size_j;
+} matrix_t;
 
-void delete_matrix(Matrix *matrix)
+matrix_t *make_matrix(size_t rows, size_t cols)
 {
-    assert(matrix->mp != NULL);
-    free(matrix->mp);
-    matrix->mp = NULL;
-}
-
-void print_matrix(Matrix *matrix)
-{
-    assert(matrix->mp != NULL);
-    for (size_t i = 0; i < matrix->size_i; i++)
+    matrix_t *matrix = (matrix_t *)calloc(1, sizeof(matrix_t));
+    *matrix = {NULL, rows, cols};
+    matrix->data = (TYPE **)calloc(rows, sizeof(TYPE *));
+    if (matrix->data != NULL)
     {
-        for (size_t j = 0; j < matrix->size_j; j++)
-            printf("[%d][%d] = %lf ", i, j, (TYPE)matrix->mp[i*matrix->size_i + j]);
+        for (size_t i = 0; i < rows; i++)
+        {
+            matrix->data[i] = (TYPE *)calloc(cols, sizeof(TYPE));
+            if (matrix->data[i] == NULL)
+                return NULL;
+        }
+    }
+    else
+        return NULL;
+    return matrix;
+}
+
+void delete_matrix(matrix_t *mp)
+{
+    for (size_t i = 0; i < mp->size_i; i++)
+        free(mp->data[i]);
+    free(mp->data);
+    free(mp);
+}
+
+void print_matrix(matrix_t *mp)
+{
+    for (size_t i = 0; i < mp->size_i; i ++)
+    {
+        for (size_t j = 0; j < mp->size_j; j++)
+            printf("%lf ", mp->data[i][j]);
         printf("\n");
     }
     printf("\n");
 }
 
-void sum_matrix(Matrix *matrix1, Matrix *matrix2)
+struct Matrix *sum_matrix(matrix_t *mp1, matrix_t *mp2)
 {
-    for (size_t i = 0; i < matrix1->size_i; i++)
+    matrix_t *mp = make_matrix(mp1->size_i, mp1->size_j);
+    for (size_t i = 0; i < mp1->size_i; i++)
     {
-        for (size_t j = 0; j < matrix1->size_j; j++)
-            *(matrix1->mp + i*matrix1->size_i + j) = *(matrix1->mp + i*matrix1->size_i + j) + *(matrix2->mp + i*matrix2->size_i + j);
+        for (size_t j = 0; j < mp1->size_j; j++)
+            mp->data[i][j] = mp1->data[i][j] + mp2->data[i][j];
     }
+    return mp;
 }
 
-void scan_matrix(Matrix *matrix)
+// // ф-ция проверяющая диагноальная или нет
+//
+// void scan_matrix(Matrix *matrix)
+// {
+//     for (size_t i = 0; i < matrix->size_i * matrix->size_j; i++)
+//     {
+//         scanf("%lf", matrix->mp + i);
+//     }
+// }
+//
+// Matrix
+
+void fill_matrix(matrix_t *mp, TYPE val)
 {
-    for (size_t i = 0; i < matrix->sizeX * matrix->sizeY; i++)
-    {
-        scanf("%lf", matrix->mp + i);
-    }
+    for (size_t i = 0; i < mp->size_i; i++)
+        for (size_t j = 0; j < mp->size_j; j++)
+            mp->data[i][j] = val;
 }
 
-void fill_matrix(Matrix *matrix, TYPE data[][3])
+bool is_diagonal(matrix_t *mp)
 {
-    for (size_t i = 0; i < matrix->size_i; i++)
+    for (size_t i = 0; i < mp->size_i; i++)
     {
-        for (size_t j = 0; j < matrix->size_j; j++)
-            matrix->mp[i*matrix->size_i + j] = data[i][j];
+        for (size_t j = 0; j < mp->size_j; j++)
+            if (double_compare(mp->data[i][j], 0))
+            {
+                if (i == j)
+                    return false;
+            }
+            else
+            {
+                if (i != j)
+                    return false;
+            }
     }
+    return true;
+}
+
+void diagonal_fill_matrix(matrix_t *mp, TYPE val)
+{
+    for (size_t i = 0; i < mp->size_i; i++)
+        for (size_t j = 0; j < mp->size_j; j++)
+            if (i == j)
+                mp->data[i][j] = val;
+            else
+                mp->data[i][j] = 0;
+}
+
+bool double_compare(const double x, const double y)
+{
+    assert(isfinite(x));
+    assert(isfinite(y));
+    return (fabs(x - y) < EPSILON);
 }
